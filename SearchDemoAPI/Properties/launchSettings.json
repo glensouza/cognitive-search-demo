@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "SearchDemoAPI": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7067",
+      "launchBrowser": false
+    }
+  }
+}
