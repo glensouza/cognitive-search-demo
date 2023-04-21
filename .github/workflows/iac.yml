@@ -5,7 +5,7 @@ on:
     branches:
       - "main" 
     paths:
-      - "Bicep/**"
+      - "bicep/**"
       - ".github/workflows/iac.yml"
   workflow_dispatch:
 
@@ -32,7 +32,9 @@ jobs:
       uses: azure/CLI@v1
       with:
         azcliversion: 2.30.0
-        inlineScript: az group delete --name ${{ vars.RESOURCE_NAME }}
+        inlineScript: |
+          az group delete --name ${{ vars.RESOURCE_NAME }}
+          az keyvault purge --name tolower(${{ vars.RESOURCE_NAME }}keyvault)
 
     - name: Provision Resources
       uses: azure/arm-deploy@v1

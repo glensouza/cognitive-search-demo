@@ -2,29 +2,50 @@ using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
+using Shared;
 
-namespace SearchDemoSWA1API
+namespace SWA1API;
+
+public class Function1
 {
-    public class Function1
+    private readonly ILogger logger;
+
+    public Function1(ILoggerFactory loggerFactory)
     {
-        private readonly ILogger _logger;
+        logger = loggerFactory.CreateLogger<Function1>();
+    }
 
-        public Function1(ILoggerFactory loggerFactory)
+    [Function("WeatherForecast")]
+    public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+    {
+        logger.LogInformation("C# HTTP trigger function processed a request.");
+
+        Random randomNumber = new();
+        int temp = 0;
+
+        WeatherForecast[] result = Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
-            _logger = loggerFactory.CreateLogger<Function1>();
-        }
+            Date = DateTime.Now.AddDays(index),
+            TemperatureC = temp = randomNumber.Next(-20, 55),
+            Summary = GetSummary(temp)
+        }).ToArray();
 
-        [Function("Function1")]
-        public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+        HttpResponseData response = req.CreateResponse(HttpStatusCode.OK);
+        response.WriteAsJsonAsync(result);
+
+        return response;
+    }
+
+    private static string GetSummary(int temp)
+    {
+        string summary = temp switch
         {
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
+            >= 32 => "Hot",
+            <= 16 and > 0 => "Cold",
+            <= 0 => "Freezing",
+            _ => "Mild"
+        };
 
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
-
-            response.WriteString("Welcome to Azure Functions!");
-
-            return response;
-        }
+        return summary;
     }
 }

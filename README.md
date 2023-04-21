@@ -54,7 +54,7 @@ The second option **(*highly recommended*)** is to separate the backend concern 
 
 This option seems to be the best option for a production application. It does have a bit more lines in the infrastructure diagram so here it is broken down by steps:
 
-1. First the key vault serves the keys it needs for that environment and so the apps know where to go for all the backend services. This will also connect the front end user interface to the SignalR service.
+1. First the key vault serves the keys it needs for that environment and so the apps know where to go for all the backend services. In this step will also connect the front end user interface to the SignalR service.
 
     ![Option 2.1](./docs/option2.1.drawio.png)
 2. Next, this diagrams shows the flow of data from the front end user interface to the backend services to add or update a record in the search service. The front end user interface will send a request to the Azure Functions API. The Azure Functions API will then send a message to be queued into the Azure Service Bus. This is great for performace as it does not block the user interface while process happens in the background.
@@ -66,3 +66,7 @@ This option seems to be the best option for a production application. It does ha
 4. To make a simple query to the search service, the front end user interface will send a request to the Azure Functions API. The Azure Functions API will then send a message to be cache service via an input binding. If it is there it returns the result. If it is not there, it queries the search service and caches the result for future queries' performace. It then returns the user the result.
 
     ![Option 2.4](./docs/option2.4.drawio.png)
+
+## Running the applications
+
+Follow the instructions in this [README](./DEVELOPMENT.md) file to run the application.

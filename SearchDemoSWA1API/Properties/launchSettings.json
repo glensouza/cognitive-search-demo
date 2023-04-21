@@ -2,7 +2,7 @@
   "profiles": {
     "SearchDemoSWA1API": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7009",
+      "commandLineArgs": "--port 7201",
       "launchBrowser": false
     }
   }

@@ -2,29 +2,54 @@ using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
+using Shared;
 
-namespace SearchDemoSWA2API
+namespace SWA2API;
+
+public class Function1
 {
-    public class Function1
+    private readonly ILogger logger;
+    private readonly HttpClient http;
+
+
+    public Function1(ILoggerFactory loggerFactory, IHttpClientFactory httpClientFactory, HttpClient http)
     {
-        private readonly ILogger _logger;
+        this.http = http;
+        this.logger = loggerFactory.CreateLogger<Function1>();
+    }
 
-        public Function1(ILoggerFactory loggerFactory)
+    [Function("WeatherForecast")]
+    public async Task<HttpResponseData > Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+    {
+        this.logger.LogInformation("C# HTTP trigger function processed a request.");
+
+        HttpResponseMessage tempResponse = await http.GetAsync("Function1");
+
+        if (tempResponse.IsSuccessStatusCode)
         {
-            _logger = loggerFactory.CreateLogger<Function1>();
+            this.logger.LogInformation("Okidoki");
+        }
+        else
+        {
+            this.logger.LogError($"{tempResponse.StatusCode} {tempResponse.ReasonPhrase}: ");
         }
 
-        [Function("Function1")]
-        public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+        HttpResponseData response = req.CreateResponse(HttpStatusCode.OK);
+        _ = response.WriteAsJsonAsync(await tempResponse.Content.ReadAsStringAsync());
+
+        return response;
+    }
+
+    private static string GetSummary(int temp)
+    {
+        string summary = temp switch
         {
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
+            >= 32 => "Hot",
+            <= 16 and > 0 => "Cold",
+            <= 0 => "Freezing",
+            _ => "Mild"
+        };
 
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
-
-            response.WriteString("Welcome to Azure Functions!");
-
-            return response;
-        }
+        return summary;
     }
 }

@@ -1,35 +1,51 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Shared;
 
-namespace SearchDemoAPI
+namespace API
 {
     public static class Function1
     {
         [FunctionName("Function1")]
-        public static async Task<IActionResult> Run(
+        public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string name = req.Query["name"];
+            Random randomNumber = new();
+            int temp = 0;
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+            WeatherForecast[] result = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            {
+                Date = DateTime.Now.AddDays(index),
+                TemperatureC = temp = randomNumber.Next(-20, 55),
+                Summary = GetSummary(temp)
+            }).ToArray();
+            
+            return new OkObjectResult(result);
+        }
 
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
+        private static string GetSummary(int temp)
+        {
+            string summary = temp switch
+            {
+                >= 32 => "Hot",
+                <= 16 and > 0 => "Cold",
+                <= 0 => "Freezing",
+                _ => "Mild"
+            };
 
-            return new OkObjectResult(responseMessage);
+            return summary;
         }
     }
 }
