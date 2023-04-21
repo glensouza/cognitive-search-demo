@@ -1,0 +1,69 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
+{
+	"name": "C# (.NET)",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/dotnet:0-7.0",
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			"settings": {},
+			"extensions": [
+   				"Azurite.azurite",
+   				"cweijan.vscode-redis-client",
+   				"DavidAnson.vscode-markdownlint",
+				"GitHub.copilot-nightly",
+   				"github.vscode-github-actions",
+   				"GitHub.vscode-pull-request-github",
+   				"hediet.vscode-drawio",
+   				"ms-azurecache.vscode-azurecache",
+   				"ms-azuretools.vscode-azureappservice",
+   				"ms-azuretools.vscode-azurecognitivesearch",
+   				"ms-azuretools.vscode-azurefunctions",
+   				"ms-azuretools.vscode-azureresourcegroups",
+   				"ms-azuretools.vscode-azurestaticwebapps",
+   				"ms-azuretools.vscode-azurestorage",
+   				"ms-azuretools.vscode-bicep",
+   				"ms-dotnettools.blazorwasm-companion",
+   				"ms-dotnettools.csharp",
+   				"ms-dotnettools.dotnet-interactive-vscode",
+   				"ms-dotnettools.vscode-dotnet-pack",
+   				"ms-dotnettools.vscode-dotnet-runtime",
+   				"ms-dotnettools.vscode-dotnet-sdk",
+				"ms-vscode-remote.remote-containers",
+				"ms-vscode-remote.remote-wsl",
+				"ms-vscode.azure-account",
+   				"ms-vscode.azure-repos",
+   				"ms-vscode.azurecli",
+   				"rangav.vscode-thunder-client",
+   				"VisualStudioOnlineApplicationInsights.application-insights"
+			]
+		}
+	},
+
+	// Use 'portsAttributes' to set default properties for specific forwarded ports. 
+	// More info: https://containers.dev/implementors/json_reference/#port-attributes
+	"portsAttributes": {
+		"5000": {
+			"label": "Hello Remote World",
+			"onAutoForward": "notify"
+		},
+		"5001": {
+			"protocol": "https"
+		}
+	}
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [5000, 5001],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "dotnet restore",
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}
