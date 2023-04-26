@@ -2,10 +2,14 @@
 
 [Back to the main page](/README.md)
 
-
 These client application was written with .NET 7 [Blazor WebAssembly](https://docs.microsoft.com/aspnet/core/blazor/?view=aspnetcore-6.0#blazor-webassembly), .NET 7 C# [Azure Functions](https://docs.microsoft.com/azure/azure-functions/functions-overview), and a C# class library with shared code.
 
 > Note: Azure Functions only supports .NET 7 in the isolated process execution model
+
+## Pre-requisites
+
+- GigHub account which you can sign up for one free here: <https://github.com/signup>.
+- Azure account which you can sign up for a free account here: <https://azure.microsoft.com/en-us/free>. Some of the services in the demo are free (with limits of course) but your new account will give you $200 credit to try out the services that are not free for the first 30 from account creation. That’s more than enough to experiment on all services in the demo.
 
 ## Getting Started
 
