@@ -9,11 +9,11 @@ resource ResourceGroup 'Microsoft.Resources/resourceGroups@2019-05-01' = {
   location: location
 }
 
-module Resources './provisionResources.bicep' = {
-  name: '${commonResourceName}-ProvisionResources'
-  params: {
-    location: location
-    commonResourceName: toLower(commonResourceName)
-  }
-  scope: ResourceGroup
-}
+// module Resources './provisionResources.bicep' = {
+//   name: '${commonResourceName}-ProvisionResources'
+//   params: {
+//     location: location
+//     commonResourceName: toLower(commonResourceName)
+//   }
+//   scope: ResourceGroup
+// }
