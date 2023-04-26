@@ -69,4 +69,4 @@ This option seems to be the best option for a production application. It does ha
 
 ## Running the applications
 
-Follow the instructions in this [README](./DEVELOPMENT.md) file to run the application.
+Follow the instructions in this [DEVELOPMENT.md](./DEVELOPMENT.md) file to run the application.

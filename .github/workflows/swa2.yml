@@ -1,0 +1,31 @@
+name: SWA1 App Build and Deploy Static Web App
+
+on:
+  push:
+    branches:
+      - "main" 
+    paths:
+        - "SearchDemoSWA2/**"
+        - "SearchDemoSWA2API/**"
+        - "SearchDemoShared/**"
+        - ".github/workflows/swa2app.yml"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  provision-service-bus:
+    runs-on: ubuntu-latest
+    steps:
+
+      # Checkout code
+    - uses: actions/checkout@main
+
+      # Log into Azure
+    - uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
