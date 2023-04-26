@@ -6,52 +6,23 @@ param location string = resourceGroup().location
 @description('Common name for all resources')
 param commonResourceName string = 'SearchDemo'
 
-@description('Name of SKU for Service Bus.')
-param serviceBusSkuName string = 'Basic'
-
-@description('Name of Queues.')
-param serviceBusQueueNames array = [
+var swaSku = 'Free'
+var deadLetterQueueName = 'deadletter'
+var functionAppName = '${commonResourceName}func'
+var keyvaultName = '${commonResourceName}keyvault'
+var serviceBusQueueNames = [
   'SearchDocument'
   'ListenerDemo'
 ]
-
-@allowed([
-  'Standard_LRS'
-  'Standard_GRS'
-  'Standard_RAGRS'
-  'Standard_ZRS'
-  'Premium_LRS'
-  'Premium_ZRS'
-  'Standard_GZRS'
-  'Standard_RAGZRS'
-])
-param storageSKU string = 'Standard_LRS'
-
-@description('SWA SKU')
-@allowed([ 'Free', 'Standard' ])
-param swaSku string = 'Free'
-
-var deadLetterQueueName = 'deadletter'
-var applicationInsightsName = '${toLower(commonResourceName)}insights'
-var appServicePlanName = '${toLower(commonResourceName)}asp'
-var functionAppName = '${toLower(commonResourceName)}func'
-var keyvaultName = '${toLower(commonResourceName)}keyvault'
-var logAnalyticsName = '${toLower(commonResourceName)}log'
-var redisCacheName = '${toLower(commonResourceName)}redis'
-var searchServiceName = '${toLower(commonResourceName)}search'
-var serviceBusNamespaceName = '${toLower(commonResourceName)}servicebus'
-var signalRName = '${toLower(commonResourceName)}signalr'
-var storageAccountName = '${toLower(commonResourceName)}storage'
-var webAppName1 = '${toLower(commonResourceName)}swa1'
-var webAppName2 = '${toLower(commonResourceName)}swa2'
+var storageAccountName = '${commonResourceName}storage'
 var storageBlobDataContributorRole = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '17d1049b-9a84-46fb-8f53-869881c3d3ab')
 var keyVaultSecretsUserRole = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
 
 resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = {
-  name: serviceBusNamespaceName
+  name: '${commonResourceName}servicebus'
   location: location
   sku: {
-    name: serviceBusSkuName
+    name: 'Basic'
   }
 
   resource deadLetterQueue 'queues@2018-01-01-preview' = {
@@ -87,7 +58,7 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview
 }
 
 resource searchService 'Microsoft.Search/searchServices@2020-08-01' = {
-  name: searchServiceName
+  name: '${commonResourceName}search'
   location: location
   sku: {
     name: 'standard'
@@ -100,10 +71,8 @@ resource searchService 'Microsoft.Search/searchServices@2020-08-01' = {
   }
 }
 
-var searchConnectionString = 'Endpoint=sb://${searchService.name}.servicebus.windows.net/;SharedAccessKeyName=service;SharedAccessKey=${listAdminKeys('${searchService.name}', searchService.apiVersion).primaryKey}'
-
 resource signalRService 'Microsoft.SignalRService/SignalR@2020-05-01' = {
-  name: signalRName
+  name: '${commonResourceName}signalr'
   location: location
   sku: {
     name: 'Free_F1'
@@ -119,7 +88,7 @@ resource signalRService 'Microsoft.SignalRService/SignalR@2020-05-01' = {
 }
 
 resource redisCache 'Microsoft.Cache/Redis@2020-06-01' = {
-  name: redisCacheName
+  name: '${commonResourceName}redis'
   location: location
   properties: {
     enableNonSslPort: false
@@ -136,7 +105,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   name: storageAccountName
   location: location
   sku: {
-    name: storageSKU
+    name: 'Standard_LRS'
   }
   kind: 'StorageV2'
   properties: {
@@ -162,8 +131,18 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   }
 }
 
+resource storageFunctionAppPermissions 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(storageAccount.id, functionAppName, storageBlobDataContributorRole)
+  scope: storageAccount
+  properties: {
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: storageBlobDataContributorRole
+  }
+}
+
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
-  name: logAnalyticsName
+  name: '${commonResourceName}log'
   location: location
   properties: {
     sku: {
@@ -182,7 +161,7 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
 }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: applicationInsightsName
+  name: '${commonResourceName}insights'
   location: location
   kind: 'web'
   properties: {
@@ -254,18 +233,8 @@ resource keyVaultFunctionAppPermissions 'Microsoft.Authorization/roleAssignments
   }
 }
 
-resource storageFunctionAppPermissions 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(storageAccount.id, functionAppName, storageBlobDataContributorRole)
-  scope: storageAccount
-  properties: {
-    principalId: functionApp.identity.principalId
-    principalType: 'ServicePrincipal'
-    roleDefinitionId: storageBlobDataContributorRole
-  }
-}
-
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
-  name: appServicePlanName
+  name: '${commonResourceName}asp'
   location: location
   sku: {
     name: 'Y1'
@@ -299,11 +268,9 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
       FUNCTIONS_WORKER_RUNTIME: 'dotnet'
       FUNCTIONS_EXTENSION_VERSION: '~4'
       ServiceBusConnectionString: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::serviceBusConnectionStringSecret.name})'
-      //var searchConnectionString = 'Endpoint=;SharedAccessKeyName=service;SharedAccessKey=${}'
       SearchServiceEndPoint: 'sb://${searchService.name}.servicebus.windows.net/'
-      AdminApiKey: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::searchServiceKey.name})'
+      SearchAdminApiKey: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::searchServiceKey.name})'
       IndexName: 'Addresses'
-
       SignalrServiceConnectionString: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::signalrServiceConnectionStringSecret.name})'
       RedisCacheConnectionString: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::redisCacheConnectionStringSecret.name})'
     }
@@ -315,7 +282,7 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
 }
 
 resource staticWebApp1 'Microsoft.Web/staticSites@2020-12-01' = {
-  name: webAppName1
+  name: '${commonResourceName}swa1'
   location: location
   sku: {
     name: swaSku
@@ -327,13 +294,15 @@ resource staticWebApp1 'Microsoft.Web/staticSites@2020-12-01' = {
     name: 'appsettings'
     properties: {
       APPINSIGHTS_INSTRUMENTATIONKEY: applicationInsights.properties.InstrumentationKey
-      SearchServiceConnectionString: searchConnectionString
+      SearchServiceEndPoint: 'sb://${searchService.name}.servicebus.windows.net/'
+      SearchAdminApiKey: listAdminKeys('${searchService.name}', searchService.apiVersion).primaryKey
+      IndexName: 'Addresses'
     }
   }
 }
 
 resource staticWebApp2 'Microsoft.Web/staticSites@2020-12-01' = {
-  name: webAppName2
+  name: '${commonResourceName}swa2'
   location: location
   sku: {
     name: swaSku

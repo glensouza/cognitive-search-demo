@@ -13,7 +13,7 @@ module Resources './provisionResources.bicep' = {
   name: '${commonResourceName}-ProvisionResources'
   params: {
     location: location
-    commonResourceName: commonResourceName
+    commonResourceName: toLower(commonResourceName)
   }
   scope: ResourceGroup
 }
