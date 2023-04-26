@@ -18,7 +18,7 @@ Developer checks in code changes for the application into the GitHub repository.
 
 The file [README.md](./bicep/README.md) will explain how to run commands to initiate the deployment of the infrastructure into Azure. Here is an overview of what will be built with this repository:
 
-![Infrastructure](./docs/infrastructure.drawio.png)
+![Infrastructure](./docs/infrastructure.v2.drawio.png)
 
 ## Components
 
@@ -27,7 +27,7 @@ The file [README.md](./bicep/README.md) will explain how to run commands to init
 - [Azure Static Web Apps](https://azure.microsoft.com/services/app-service/static) is a fully managed app service that enables you to build and deploy full-stack web apps directly from a GitHub repository. The service builds and deploys your app, and provides a global content delivery network (CDN) for your static content.
 - [App Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview) is a feature of Azure Monitor that provides a rich set of analytics tools to help you monitor your application's health and performance. It can automatically detect common problems and includes powerful analytics tools to help you diagnose issues and to understand what users actually do with your app.
 - [Azure Functions](https://azure.microsoft.com/services/functions) is a serverless compute service that lets you run code on-demand without having to explicitly provision or manage infrastructure. Azure Functions can be used to extend other Azure services or to build your own back-end services. It enables you to write event-driven serverless code, maintain less infrastructure, and save money.
-  - [Service Bus trigger for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger) **FIX HERE** enable you to respond to an event sent to an event hub event stream.
+  - [Service Bus trigger for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-service-bus-trigger) enable you to respond to an event sent to an service bus message.
   - [Azure SignalR Service output binding for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service-output) enables you to send messages by using Azure SignalR Service.
 - [Azure Storage](https://learn.microsoft.com/en-us/azure/storage/common/storage-introduction) is a Microsoft-managed cloud service that provides highly available and secure storage that scales as your needs grow. Storage is a general-purpose storage account that can be used for a variety of data types and scenarios.
 - [Azure Key Vault](https://learn.microsoft.com/en-us/azure/key-vault/general/overview/) securely stores and controls access to secrets like API keys, passwords, certificates, and cryptographic keys. Azure Key Vault also lets you easily provision, manage, and deploy public and private Transport Layer Security/Secure Sockets Layer (TLS/SSL) certificates, for use with Azure and your internal connected resources.
@@ -40,15 +40,15 @@ The file [README.md](./bicep/README.md) will explain how to run commands to init
 
 This repository demostrates two ways of ingesting data into Azure Cognitive Search.
 
-The first option is a minimal infrastructure option where the static web app will directly interact with the search service.
-
-The second option **(*highly recommended*)** is to separate the backend concern completely with a microservice exposing apis hosted in Azure Functions to interact with the search service and also use a messaging service and cache results for performance.
-
 ### Option 1
+
+The first option is a minimal infrastructure option where the static web app will directly interact with the search service.
 
 ![Option 1](./docs/option1.v2.drawio.png)
 
 ### Option 2
+
+The second option **(*highly recommended*)** is to separate the backend concern completely with a microservice exposing apis hosted in Azure Functions to interact with the search service and also use a messaging service and cache results for performance.
 
 ![Option 2](./docs/option2.v2.drawio.png)
 
