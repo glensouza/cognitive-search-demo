@@ -222,10 +222,10 @@ resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' = {
     }
   }
   
-  resource searchServiceConnectionStringSecret 'secrets' = {
-    name: 'searchServiceConnectionString'
+  resource searchServiceKey 'secrets' = {
+    name: 'searchServiceKey'
     properties: {
-      value: searchConnectionString
+      value: listAdminKeys('${searchService.name}', searchService.apiVersion).primaryKey
     }
   }
 
@@ -299,7 +299,11 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
       FUNCTIONS_WORKER_RUNTIME: 'dotnet'
       FUNCTIONS_EXTENSION_VERSION: '~4'
       ServiceBusConnectionString: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::serviceBusConnectionStringSecret.name})'
-      SearchServiceConnectionString: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::searchServiceConnectionStringSecret.name})'
+      //var searchConnectionString = 'Endpoint=;SharedAccessKeyName=service;SharedAccessKey=${}'
+      SearchServiceEndPoint: 'sb://${searchService.name}.servicebus.windows.net/'
+      AdminApiKey: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::searchServiceKey.name})'
+      IndexName: 'Addresses'
+
       SignalrServiceConnectionString: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::signalrServiceConnectionStringSecret.name})'
       RedisCacheConnectionString: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::redisCacheConnectionStringSecret.name})'
     }

@@ -1,21 +1,29 @@
 using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Shared;
 
 namespace SWA2API;
 
-public class Function1
+public class WeatherForecastFunc
 {
     private readonly ILogger logger;
     private readonly HttpClient http;
 
-
-    public Function1(ILoggerFactory loggerFactory, IHttpClientFactory httpClientFactory, HttpClient http)
+    public WeatherForecastFunc(ILoggerFactory loggerFactory, IConfiguration configuration)
     {
-        this.http = http;
-        this.logger = loggerFactory.CreateLogger<Function1>();
+        this.logger = loggerFactory.CreateLogger<WeatherForecast>();
+        this.http = new HttpClient
+        {
+            BaseAddress = new Uri(configuration["FunctionUrl"]),
+            DefaultRequestHeaders =
+            {
+                { "x-functions-key", configuration["FunctionKey"] }
+            }
+        };
     }
 
     [Function("WeatherForecast")]
@@ -34,8 +42,11 @@ public class Function1
             this.logger.LogError($"{tempResponse.StatusCode} {tempResponse.ReasonPhrase}: ");
         }
 
+        string responseText = await tempResponse.Content.ReadAsStringAsync();
+        WeatherForecast[] forecasts = JsonConvert.DeserializeObject < WeatherForecast[]>(responseText);
+
         HttpResponseData response = req.CreateResponse(HttpStatusCode.OK);
-        _ = response.WriteAsJsonAsync(await tempResponse.Content.ReadAsStringAsync());
+        _ = response.WriteAsJsonAsync(forecasts);
 
         return response;
     }
