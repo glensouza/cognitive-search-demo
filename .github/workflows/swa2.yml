@@ -8,7 +8,7 @@ on:
         - "SearchDemoSWA2/**"
         - "SearchDemoSWA2API/**"
         - "SearchDemoShared/**"
-        - ".github/workflows/swa2app.yml"
+        - ".github/workflows/swa2.yml"
   workflow_dispatch:
 
 permissions:
