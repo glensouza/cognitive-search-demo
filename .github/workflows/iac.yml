@@ -33,7 +33,7 @@ jobs:
       with:
         azcliversion: 2.30.0
         inlineScript: |
-          az group delete --name ${{ vars.RESOURCE_NAME }}
+          az group delete --name ${{ vars.RESOURCE_NAME }} --yes
           az keyvault purge --name tolower(${{ vars.RESOURCE_NAME }}keyvault)
 
     # - name: Provision Resources
