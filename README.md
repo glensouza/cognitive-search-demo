@@ -46,26 +46,26 @@ The second option **(*highly recommended*)** is to separate the backend concern 
 
 ### Option 1
 
-![Option 1](./docs/option1.drawio.png)
+![Option 1](./docs/option1.v2.drawio.png)
 
 ### Option 2
 
-![Option 2](./docs/option2.drawio.png)
+![Option 2](./docs/option2.v2.drawio.png)
 
 This option seems to be the best option for a production application. It does have a bit more lines in the infrastructure diagram so here it is broken down by steps:
 
 1. First the key vault serves the keys it needs for that environment and so the apps know where to go for all the backend services. In this step will also connect the front end user interface to the SignalR service.
 
-    ![Option 2.1](./docs/option2.1.drawio.png)
+    ![Option 2.1](./docs/option2.1.v2.drawio.png)
 2. Next, this diagrams shows the flow of data from the front end user interface to the backend services to add or update a record in the search service. The front end user interface will send a request to the Azure Functions API. The Azure Functions API will then send a message to be queued into the Azure Service Bus. This is great for performace as it does not block the user interface while process happens in the background.
 
-    ![Option 2.2](./docs/option2.2.drawio.png)
+    ![Option 2.2](./docs/option2.2.v2.drawio.png)
 3. As the Azure Function has a binding subscription to the Azure Service Bus queue, a trigger will happen for the message to then flow to the Azure Functions in the background to be processed. The Azure Function  will then send a message to the Azure Cognitive Search service and after it receives a successful message it will send a notification to the user via the Azure SignalR Service.
 
-    ![Option 2.3](./docs/option2.3.drawio.png)
+    ![Option 2.3](./docs/option2.3.v2.drawio.png)
 4. To make a simple query to the search service, the front end user interface will send a request to the Azure Functions API. The Azure Functions API will then send a message to be cache service via an input binding. If it is there it returns the result. If it is not there, it queries the search service and caches the result for future queries' performace. It then returns the user the result.
 
-    ![Option 2.4](./docs/option2.4.drawio.png)
+    ![Option 2.4](./docs/option2.4.v2.drawio.png)
 
 ## Running the applications
 
