@@ -36,7 +36,7 @@ jobs:
           if [$(az group exists --name ${{ vars.RESOURCE_NAME }}) = true]
           then
             az group delete --name ${{ vars.RESOURCE_NAME }} --yes
-            az keyvault purge --name tolower(${{ vars.RESOURCE_NAME }}keyvault) --no-wait
+            # az keyvault purge --name tolower(${{ vars.RESOURCE_NAME }}keyvault) --no-wait
           fi
 
     - name: Provision Resources
