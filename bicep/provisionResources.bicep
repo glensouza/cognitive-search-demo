@@ -181,7 +181,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' = {
     enabledForDeployment: false
     enabledForDiskEncryption: true
     enabledForTemplateDeployment: false
-    enablePurgeProtection: false
+    // enablePurgeProtection: false
     enableSoftDelete: false
     sku: {
       family: 'A'
