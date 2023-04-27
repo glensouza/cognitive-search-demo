@@ -38,7 +38,7 @@ jobs:
       uses: azure/CLI@v1
       with:
         azcliversion: latest
-        inlineScript: echo "SWA_TOKEN=$(az staticwebapp secrets list --name ${{ vars.RESOURCE_NAME }} --query 'properties.apiKey')" >> "$GITHUB_OUTPUT"
+        inlineScript: echo "SWA_TOKEN=$(az staticwebapp secrets list --name ${{ vars.RESOURCE_NAME }}swa1 --query 'properties.apiKey')" >> "$GITHUB_OUTPUT"
 
     - name: Build And Deploy
       id: builddeploy
@@ -49,7 +49,7 @@ jobs:
         action: "upload"
         ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
         # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-        app_location: "Client" # App source code path
-        api_location: "Api" # Api source code path - optional
+        app_location: "SearchDemoSWA1" # App source code path
+        api_location: "SearchDemoSWA1API" # Api source code path - optional
         output_location: "wwwroot" # Built app content directory - optional
         ###### End of Repository/Build Configurations ######
