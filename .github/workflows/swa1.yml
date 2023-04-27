@@ -18,10 +18,13 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    name: Build and Deploy Job
     steps:
 
       # Checkout code
-    - uses: actions/checkout@main
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
 
       # Log into Azure
     - uses: azure/login@v1
@@ -29,3 +32,31 @@ jobs:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Set color
+      id: random-color-generator
+      run: echo "SELECTED_COLOR=green" >> "$GITHUB_OUTPUT"
+    - name: Get color
+
+      run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}"
+
+    - name: Get SWA Token
+      id: swa-token
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: echo "SWA_TOKEN=$(az staticwebapp secrets list --name ${{ vars.RESOURCE_NAME }} --query "properties.apiKey)" >> "$GITHUB_OUTPUT"
+
+    - name: Build And Deploy
+      id: builddeploy
+      uses: Azure/static-web-apps-deploy@v1
+      with:
+        azure_static_web_apps_api_token: ${{ steps.swa-token.outputs.SWA_TOKEN }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
+        action: "upload"
+        ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
+        # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
+        app_location: "Client" # App source code path
+        api_location: "Api" # Api source code path - optional
+        output_location: "wwwroot" # Built app content directory - optional
+        ###### End of Repository/Build Configurations ######
