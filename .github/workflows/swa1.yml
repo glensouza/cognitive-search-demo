@@ -38,7 +38,12 @@ jobs:
       uses: azure/CLI@v1
       with:
         azcliversion: latest
-        inlineScript: echo "SWA_TOKEN=$(az staticwebapp secrets list --name ${{ vars.RESOURCE_NAME }}swa1 --query 'properties.apiKey')" >> "$GITHUB_OUTPUT"
+        inlineScript: |
+          echo "$(az staticwebapp secrets list --name ${{ vars.RESOURCE_NAME }}swa1 --query 'properties.apiKey')"
+          echo "SWA_TOKEN=$(az staticwebapp secrets list --name ${{ vars.RESOURCE_NAME }}swa1 --query 'properties.apiKey')" >> "$GITHUB_OUTPUT"
+
+    - name: Get color
+      run: echo "The selected color is ${{ steps.swa-token.outputs.SWA_TOKEN }}"
 
     - name: Build And Deploy
       id: builddeploy
