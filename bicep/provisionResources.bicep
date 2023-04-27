@@ -6,13 +6,13 @@ param location string = resourceGroup().location
 @description('Common name for all resources')
 param commonResourceName string = 'GSNVSearchDemo'
 
-var provisionServiceBus = false
+var provisionServiceBus = true
 var provisionSearch = false
 var provisionSignalR = false
 var provisionRedis = false
 var provisionApplicationInsights = true
-var provisionKeyVault = false
-var provisionFunctionApp = false
+var provisionKeyVault = true
+var provisionFunctionApp = true
 var provisionSWA1 = false
 var provisionSWA2 = false
 
