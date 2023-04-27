@@ -38,7 +38,16 @@ jobs:
           then
             echo "Deleting Resource Group"
             az group delete --name ${{ vars.RESOURCE_NAME }} --yes
-            # az keyvault purge --name tolower(${{ vars.RESOURCE_NAME }}keyvault) --no-wait
+            echo "Resource Group Deleted"
+            echo "Purging Key Vault"
+            { # try
+              az keyvault purge --name tolower(${{ vars.RESOURCE_NAME }}keyvault) --no-wait &&
+              echo "Key Vault Purged"
+            } || { # catch
+              echo "Key Vault Not Found"
+            }
+          else
+            echo "Resource Group Not Found"
           fi
 
     - name: Provision Resources
