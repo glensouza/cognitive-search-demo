@@ -191,6 +191,8 @@ resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' = if(provisionKeyVault)
     enabledForDeployment: false
     enabledForDiskEncryption: true
     enabledForTemplateDeployment: false
+    enablePurgeProtection: false
+    enableSoftDelete: false
     sku: {
       family: 'A'
       name: 'standard'
