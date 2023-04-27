@@ -1,9 +1,108 @@
 ﻿@page "/"
+@using global::Shared
+@inject HttpClient Http
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Search Demo SWA1</h1>
 
-Welcome to your new app.
+Enter Search Term: <input type="text" @bind="SearchTerm" />
+<button class="btn btn-primary" @onclick="this.Search">Search</button>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@if (this.searchAddresses.Any())
+{
+    <h2>Search Results</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Address</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Zip</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Address address in this.searchAddresses)
+            {
+                <tr>
+                    <td>@address.Line1<br />@address.Line2</td>
+                    <td>@address.City</td>
+                    <td>@address.State</td>
+                    <td>@address.PostalCode</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<hr />
+
+<h1>Insert 5 Random Addresses</h1>
+
+<button class="btn btn-primary" @onclick="this.Insert">Insert</button>
+
+@if (this.insertAddresses.Any())
+{
+    <h2>Inserted Records:</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Address</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zip</th>
+        </tr>
+        </thead>
+        <tbody>
+            @foreach (Address address in this.insertAddresses)
+        {
+            <tr>
+                <td>@address.Line1<br />@address.Line2</td>
+                <td>@address.City</td>
+                <td>@address.State</td>
+                <td>@address.PostalCode</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string SearchTerm { get; set; } = string.Empty;
+    private List<Address> searchAddresses = new();
+    private List<Address> insertAddresses = new();
+
+    private async Task Search()
+    {
+        try
+        {
+            this.searchAddresses = await this.Http.GetFromJsonAsync<List<Address>>($"Search/?searchTerm={this.SearchTerm}") ?? new List<Address>();
+        }
+        catch (Exception e)
+        {
+            this.searchAddresses = new List<Address>();
+        }
+        this.StateHasChanged();
+    }
+
+    private async Task Insert()
+    {
+        SendRequest sendRequest = new() { NumberOfAddresses = "5"  };
+        HttpResponseMessage result = await this.Http.PostAsJsonAsync("InsertRandomAddress", sendRequest);
+        if (result.IsSuccessStatusCode)
+        {
+            this.insertAddresses = await result.Content.ReadFromJsonAsync<List<Address>>() ?? new List<Address>();
+        }
+        else
+        {
+            this.insertAddresses = new List<Address>();
+        }
+
+        this.StateHasChanged();
+    }
+
+    private class SendRequest
+    {
+        public string NumberOfAddresses { get; set; } = string.Empty;
+    }
+}

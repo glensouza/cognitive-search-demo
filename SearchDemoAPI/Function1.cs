@@ -7,20 +7,31 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Enums;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Shared;
 
 namespace API
 {
-    public static class Function1
+    public class Function1
     {
-        [FunctionName("Function1")]
-        public static IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+        private readonly ILogger<Function1> logger;
+
+        public Function1(ILogger<Function1> log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            this.logger = log;
+        }
+
+        [FunctionName("Function1")]
+        [OpenApiOperation(operationId: "Run", tags: new[] { "name" })]
+        [OpenApiSecurity("function_key", SecuritySchemeType.ApiKey, Name = "code", In = OpenApiSecurityLocationType.Query)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(WeatherForecast[]), Description = "The OK response")]
+        public IActionResult Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req)
+        {
+            this.logger.LogInformation("C# HTTP trigger function processed a request.");
 
             Random randomNumber = new();
             int temp = 0;
@@ -31,7 +42,7 @@ namespace API
                 TemperatureC = temp = randomNumber.Next(-20, 55),
                 Summary = GetSummary(temp)
             }).ToArray();
-            
+
             return new OkObjectResult(result);
         }
 
@@ -47,5 +58,7 @@ namespace API
 
             return summary;
         }
+
     }
 }
+

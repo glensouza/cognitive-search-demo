@@ -270,9 +270,9 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
       FUNCTIONS_WORKER_RUNTIME: 'dotnet'
       FUNCTIONS_EXTENSION_VERSION: '~4'
       ServiceBusConnectionString: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::serviceBusConnectionStringSecret.name})'
-      SearchServiceEndPoint: 'sb://${searchService.name}.servicebus.windows.net/'
-      SearchAdminApiKey: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::searchServiceKey.name})'
-      IndexName: 'Addresses'
+      SearchServiceEndPoint: 'https://${searchService.name}.search.windows.net'
+      SearchServiceAdminApiKey: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::searchServiceKey.name})'
+      SearchServiceIndexName: 'addresses'
       SignalrServiceConnectionString: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::signalrServiceConnectionStringSecret.name})'
       RedisCacheConnectionString: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::redisCacheConnectionStringSecret.name})'
     }
@@ -296,9 +296,9 @@ resource staticWebApp1 'Microsoft.Web/staticSites@2020-12-01' = {
     name: 'appsettings'
     properties: {
       APPINSIGHTS_INSTRUMENTATIONKEY: applicationInsights.properties.InstrumentationKey
-      SearchServiceEndPoint: 'sb://${searchService.name}.servicebus.windows.net/'
-      SearchAdminApiKey: listAdminKeys('${searchService.name}', searchService.apiVersion).primaryKey
-      IndexName: 'Addresses'
+      SearchServiceEndPoint: 'https://${searchService.name}.search.windows.net'
+      SearchServiceAdminApiKey: listAdminKeys('${searchService.name}', searchService.apiVersion).primaryKey
+      SearchServiceIndexName: 'addresses'
     }
   }
 }

@@ -17,12 +17,12 @@ Get Started:
 
 <h1>Counter</h1>
 
-<p role="status">Current count: @currentCount</p>
+<p role="status">Current count: @(this.currentCount)</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-primary" @onclick="this.IncrementCount">Click me</button>
 
 
-@if (forecasts == null)
+@if (this.forecasts == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -38,7 +38,7 @@ else
         </tr>
         </thead>
         <tbody>
-        @foreach (WeatherForecast? forecast in forecasts)
+        @foreach (WeatherForecast? forecast in this.forecasts)
         {
             <tr>
                 <td>@forecast.Date.ToShortDateString()</td>
@@ -60,7 +60,7 @@ else
     {
         try
         {
-            forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast") ?? new WeatherForecast[] { };
+            this.forecasts = await this.Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast") ?? new WeatherForecast[] { };
         }
         catch (Exception ex)
         {
@@ -70,7 +70,7 @@ else
 
     private void IncrementCount()
     {
-        currentCount++;
+        this.currentCount++;
     }
 
 }

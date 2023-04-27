@@ -12,13 +12,13 @@ public class Function1
 
     public Function1(ILoggerFactory loggerFactory)
     {
-        logger = loggerFactory.CreateLogger<Function1>();
+        this.logger = loggerFactory.CreateLogger<Function1>();
     }
 
     [Function("WeatherForecast")]
     public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
-        logger.LogInformation("C# HTTP trigger function processed a request.");
+        this.logger.LogInformation("C# HTTP trigger function processed a request.");
 
         Random randomNumber = new();
         int temp = 0;

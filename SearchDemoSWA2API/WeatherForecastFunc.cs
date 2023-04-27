@@ -31,7 +31,7 @@ public class WeatherForecastFunc
     {
         this.logger.LogInformation("C# HTTP trigger function processed a request.");
 
-        HttpResponseMessage tempResponse = await http.GetAsync("Function1");
+        HttpResponseMessage tempResponse = await this.http.GetAsync("Function1");
 
         if (tempResponse.IsSuccessStatusCode)
         {
@@ -49,18 +49,5 @@ public class WeatherForecastFunc
         _ = response.WriteAsJsonAsync(forecasts);
 
         return response;
-    }
-
-    private static string GetSummary(int temp)
-    {
-        string summary = temp switch
-        {
-            >= 32 => "Hot",
-            <= 16 and > 0 => "Cold",
-            <= 0 => "Freezing",
-            _ => "Mild"
-        };
-
-        return summary;
     }
 }

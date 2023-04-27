@@ -1,17 +1,21 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
     <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        <div class="top-row">
+            <div class="ps-3 navbar">
+                <div class="container-fluid">
+                    <h2 class="navbar-brand">Search Demo SWA1</h2>
+                </div>
+            </div>
+
+            <div class="px-4">
+                <a href="https://github.com/glensouza/cognitive-search-demo" target="_blank">Source Code</a>
+            </div>
         </div>
 
         <article class="content px-4">
-            @Body
+            @(this.Body)
         </article>
     </main>
 </div>
