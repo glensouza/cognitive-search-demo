@@ -22,9 +22,9 @@ jobs:
     steps:
 
       # Checkout code
-    - uses: actions/checkout@v3
-      with:
-        submodules: true
+    # - uses: actions/checkout@v3
+    #   with:
+    #     submodules: true
 
       # Log into Azure
     - uses: azure/login@v1
@@ -39,6 +39,13 @@ jobs:
       with:
         azcliversion: latest
         inlineScript: echo "SWA_TOKEN=$(az staticwebapp secrets list --name ${{ vars.RESOURCE_NAME }}swa1 --query 'properties.apiKey').replace('\"','')" >> "$GITHUB_OUTPUT"
+
+    - name: Show Token
+      run: echo "token:${{ steps.swa-token.outputs.SWA_TOKEN }}"
+  
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
 
     - name: Build And Deploy
       id: builddeploy
