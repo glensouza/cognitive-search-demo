@@ -38,7 +38,7 @@ jobs:
       uses: azure/CLI@v1
       with:
         azcliversion: latest
-        inlineScript: echo "SWA_TOKEN=$((az staticwebapp secrets list --name ${{ vars.RESOURCE_NAME }}swa1 --query 'properties.apiKey').replace('\"',''))" >> "$GITHUB_OUTPUT"
+        inlineScript: echo SWA_TOKEN=$((az staticwebapp secrets list --name ${{ vars.RESOURCE_NAME }}swa1 --query 'properties.apiKey') >> "$GITHUB_OUTPUT"
 
     - name: Show Token
       run: echo "token:${{ steps.swa-token.outputs.SWA_TOKEN }}"
