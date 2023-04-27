@@ -33,8 +33,10 @@ jobs:
       with:
         azcliversion: 2.30.0
         inlineScript: |
+          echo "Emptying out environment"
           if [$(az group exists --name ${{ vars.RESOURCE_NAME }}) = true]
           then
+            echo "Deleting Resource Group"
             az group delete --name ${{ vars.RESOURCE_NAME }} --yes
             # az keyvault purge --name tolower(${{ vars.RESOURCE_NAME }}keyvault) --no-wait
           fi

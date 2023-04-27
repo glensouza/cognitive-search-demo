@@ -6,16 +6,6 @@ param location string = resourceGroup().location
 @description('Common name for all resources')
 param commonResourceName string = 'GSNVSearchDemo'
 
-var provisionServiceBus = true
-var provisionSearch = false
-var provisionSignalR = false
-var provisionRedis = false
-var provisionApplicationInsights = true
-var provisionKeyVault = true
-var provisionFunctionApp = true
-var provisionSWA1 = false
-var provisionSWA2 = false
-
 var swaSku = 'Free'
 var deadLetterQueueName = 'deadletter'
 var functionAppName = '${commonResourceName}func'
@@ -28,7 +18,7 @@ var storageAccountName = '${commonResourceName}storage'
 var storageBlobDataContributorRole = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '17d1049b-9a84-46fb-8f53-869881c3d3ab')
 var keyVaultSecretsUserRole = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
 
-resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = if(provisionServiceBus) {
+resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = {
   name: '${commonResourceName}servicebus'
   location: location
   sku: {
@@ -67,7 +57,7 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview
   }]
 }
 
-resource searchService 'Microsoft.Search/searchServices@2020-08-01' = if(provisionSearch) {
+resource searchService 'Microsoft.Search/searchServices@2020-08-01' = {
   name: '${commonResourceName}search'
   location: location
   sku: {
@@ -81,7 +71,7 @@ resource searchService 'Microsoft.Search/searchServices@2020-08-01' = if(provisi
   }
 }
 
-resource signalRService 'Microsoft.SignalRService/SignalR@2020-05-01' = if(provisionSignalR) {
+resource signalRService 'Microsoft.SignalRService/SignalR@2020-05-01' = {
   name: '${commonResourceName}signalr'
   location: location
   sku: {
@@ -97,7 +87,7 @@ resource signalRService 'Microsoft.SignalRService/SignalR@2020-05-01' = if(provi
   }
 }
 
-resource redisCache 'Microsoft.Cache/Redis@2020-06-01' = if (provisionRedis) {
+resource redisCache 'Microsoft.Cache/Redis@2020-06-01' = {
   name: '${commonResourceName}redis'
   location: location
   properties: {
@@ -111,7 +101,7 @@ resource redisCache 'Microsoft.Cache/Redis@2020-06-01' = if (provisionRedis) {
   }
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = if(provisionFunctionApp) {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   name: storageAccountName
   location: location
   sku: {
@@ -141,7 +131,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = if(prov
   }
 }
 
-resource storageFunctionAppPermissions 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = if(provisionFunctionApp) {
+resource storageFunctionAppPermissions 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
   name: guid(storageAccount.id, functionAppName, storageBlobDataContributorRole)
   scope: storageAccount
   properties: {
@@ -151,7 +141,7 @@ resource storageFunctionAppPermissions 'Microsoft.Authorization/roleAssignments@
   }
 }
 
-resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = if(provisionApplicationInsights) {
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: '${commonResourceName}log'
   location: location
   properties: {
@@ -170,7 +160,7 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = if
   }
 }
 
-resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = if(provisionApplicationInsights) {
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${commonResourceName}insights'
   location: location
   kind: 'web'
@@ -182,7 +172,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = if(pro
   }
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' = if(provisionKeyVault) {
+resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' = {
   name: keyvaultName
   location: location
   properties: {
@@ -227,7 +217,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' = if(provisionKeyVault)
     }
   }
   
-  resource redisCacheConnectionStringSecret 'secrets' = if (provisionRedis) {
+  resource redisCacheConnectionStringSecret 'secrets' = {
     name: 'redisCacheConnectionString'
     properties: {
       value: '${redisCache.name}.redis.cache.windows.net,abortConnect=false,ssl=true,password=${redisCache.listKeys().primaryKey}'    
@@ -235,7 +225,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' = if(provisionKeyVault)
   }
 }
 
-resource keyVaultFunctionAppPermissions 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = if(provisionFunctionApp && provisionKeyVault) {
+resource keyVaultFunctionAppPermissions 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
   name: guid(keyVault.id, functionAppName, keyVaultSecretsUserRole)
   scope: keyVault
   properties: {
@@ -245,7 +235,7 @@ resource keyVaultFunctionAppPermissions 'Microsoft.Authorization/roleAssignments
   }
 }
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = if(provisionFunctionApp) {
+resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: '${commonResourceName}asp'
   location: location
   sku: {
@@ -255,7 +245,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = if(provisionFun
   properties: {}
 }
 
-resource functionApp 'Microsoft.Web/sites@2021-03-01' = if(provisionFunctionApp) {
+resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
   name: functionAppName
   location: location
   kind: 'functionapp'
@@ -275,16 +265,16 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = if(provisionFunctionApp)
   resource functionAppConfiguration 'config' = {
     name: 'appsettings'
     properties: {
-      AzureWebJobsStorage: (provisionFunctionApp ? '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::storageAccountConnectionStringSecret.name})' : '')
-      APPINSIGHTS_INSTRUMENTATIONKEY: (provisionApplicationInsights ? applicationInsights.properties.InstrumentationKey : '')
+      AzureWebJobsStorage: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::storageAccountConnectionStringSecret.name})'
+      APPINSIGHTS_INSTRUMENTATIONKEY: applicationInsights.properties.InstrumentationKey
       FUNCTIONS_WORKER_RUNTIME: 'dotnet'
       FUNCTIONS_EXTENSION_VERSION: '~4'
-      ServiceBusConnectionString: (provisionServiceBus ? '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::serviceBusConnectionStringSecret.name})' : '')
-      SearchServiceEndPoint: (provisionSearch ? 'sb://${searchService.name}.servicebus.windows.net/' : '')
-      SearchAdminApiKey: (provisionSearch ? '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::searchServiceKey.name})' : '')
-      IndexName: (provisionSearch ? 'Addresses' : '')
-      SignalrServiceConnectionString: (provisionSignalR ? '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::signalrServiceConnectionStringSecret.name})' : '')
-      RedisCacheConnectionString: (provisionRedis ? '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::redisCacheConnectionStringSecret.name})': '')
+      ServiceBusConnectionString: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::serviceBusConnectionStringSecret.name})'
+      SearchServiceEndPoint: 'sb://${searchService.name}.servicebus.windows.net/'
+      SearchAdminApiKey: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::searchServiceKey.name})'
+      IndexName: 'Addresses'
+      SignalrServiceConnectionString: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::signalrServiceConnectionStringSecret.name})'
+      RedisCacheConnectionString: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${keyVault::redisCacheConnectionStringSecret.name})': '')
     }
     dependsOn: [
       storageFunctionAppPermissions
@@ -293,7 +283,7 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = if(provisionFunctionApp)
   }  
 }
 
-resource staticWebApp1 'Microsoft.Web/staticSites@2020-12-01' = if(provisionSWA1) {
+resource staticWebApp1 'Microsoft.Web/staticSites@2020-12-01' = {
   name: '${commonResourceName}swa1'
   location: location
   sku: {
@@ -305,15 +295,15 @@ resource staticWebApp1 'Microsoft.Web/staticSites@2020-12-01' = if(provisionSWA1
   resource staticWebAppAppSettings 'config' = {
     name: 'appsettings'
     properties: {
-      APPINSIGHTS_INSTRUMENTATIONKEY: (provisionApplicationInsights ? applicationInsights.properties.InstrumentationKey : '')
-      SearchServiceEndPoint: (provisionSearch ? 'sb://${searchService.name}.servicebus.windows.net/' : '')
-      SearchAdminApiKey: (provisionSearch ? listAdminKeys('${searchService.name}', searchService.apiVersion).primaryKey : '')
-      IndexName: (provisionSearch ? 'Addresses' : '')
+      APPINSIGHTS_INSTRUMENTATIONKEY: applicationInsights.properties.InstrumentationKey
+      SearchServiceEndPoint: 'sb://${searchService.name}.servicebus.windows.net/'
+      SearchAdminApiKey: listAdminKeys('${searchService.name}', searchService.apiVersion).primaryKey
+      IndexName: 'Addresses'
     }
   }
 }
 
-resource staticWebApp2 'Microsoft.Web/staticSites@2020-12-01' = if(provisionSWA2) {
+resource staticWebApp2 'Microsoft.Web/staticSites@2020-12-01' = {
   name: '${commonResourceName}swa2'
   location: location
   sku: {
@@ -325,9 +315,9 @@ resource staticWebApp2 'Microsoft.Web/staticSites@2020-12-01' = if(provisionSWA2
   resource staticWebAppAppSettings 'config' = {
     name: 'appsettings'
     properties: {
-      APPINSIGHTS_INSTRUMENTATIONKEY: (provisionApplicationInsights ? applicationInsights.properties.InstrumentationKey : '')
-      FunctionKey: (provisionFunctionApp ? listkeys('${functionApp.id}/host/default', '2016-08-01').functionKeys.default : '')
-      FunctionUrl: (provisionFunctionApp ? '${functionApp.properties.defaultHostName}/api' : '')
+      APPINSIGHTS_INSTRUMENTATIONKEY: applicationInsights.properties.InstrumentationKey
+      FunctionKey: listkeys('${functionApp.id}/host/default', '2016-08-01').functionKeys.default
+      FunctionUrl: '${functionApp.properties.defaultHostName}/api'
     }
   }
 }
