@@ -37,7 +37,7 @@ jobs:
       id: swa-token
       uses: azure/CLI@v1
       with:
-        azcliversion: 2.30.0
+        azcliversion: latest
         inlineScript: echo "SWA_TOKEN=$(az staticwebapp secrets list --name ${{ vars.RESOURCE_NAME }} --query "properties.apiKey)" >> "$GITHUB_OUTPUT"
 
     - name: Build And Deploy
