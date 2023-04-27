@@ -1,5 +1,9 @@
 ﻿@page "/"
 @using global::Shared
+@using System.Text
+@using System.Text.Json.Serialization
+@using Newtonsoft.Json
+@using JsonConverter = System.Text.Json.Serialization.JsonConverter
 @inject HttpClient Http
 
 <PageTitle>Index</PageTitle>
@@ -76,6 +80,7 @@ Enter Search Term: <input type="text" @bind="SearchTerm" />
     {
         try
         {
+            Uri uri = new Uri($"Search/?searchTerm={this.SearchTerm}").Query.Insert();
             this.searchAddresses = await this.Http.GetFromJsonAsync<List<Address>>($"Search/?searchTerm={this.SearchTerm}") ?? new List<Address>();
         }
         catch (Exception e)
@@ -88,7 +93,10 @@ Enter Search Term: <input type="text" @bind="SearchTerm" />
     private async Task Insert()
     {
         SendRequest sendRequest = new() { NumberOfAddresses = "5"  };
-        HttpResponseMessage result = await this.Http.PostAsJsonAsync("InsertRandomAddress", sendRequest);
+
+        string param = JsonConvert.SerializeObject(sendRequest);
+        HttpContent content = new StringContent(param, Encoding.UTF8, "application/json");
+        HttpResponseMessage result = await this.Http.PostAsJsonAsync("InsertRandomAddress", content);
         if (result.IsSuccessStatusCode)
         {
             this.insertAddresses = await result.Content.ReadFromJsonAsync<List<Address>>() ?? new List<Address>();
